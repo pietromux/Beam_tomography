@@ -1,0 +1,66 @@
+# Pegasus Beamline
+# Run after dipole for tomography
+GPTLICENSE = 1476385047;
+
+accuracy (5,5);
+#Default Magnet Setup
+if(!defined(focus)) focus = 1;
+if(!defined(quad)) quad = 1;
+
+setfile("beam","start.gdf");
+
+############## FLAT BEAM TRANSFORM ##################
+quadrotangle = pi/4;
+drift12 = 0.112;
+drift23 = 0.151;
+ethickness = 0.105; 		#from alex for fringeless
+thickness = 0.085725;	#actual geometric thickness
+b1 = 100;                                       # Larger number - sharper fringe field
+
+if(!defined(I1)) I1 = 0;
+if(!defined(I2)) I2 = 0;
+if(!defined(I3)) I3 = 0;
+
+if(!defined(G1)) G1=I1*0.4;
+if(!defined(G2)) G2=I2*0.48;
+if(!defined(G3)) G3=I3*0.48;
+
+if(!defined(skewpos1)) skewpos1= 2.793+thickness/2;
+
+cosphi = cos(quadrotangle);
+sinphi = -sin(quadrotangle);
+skewpos2 = skewpos1 + drift12;
+skewpos3 = skewpos2 + drift23;
+
+
+
+##############    FOCUSING QUADS   ##################
+if(focus == 1)
+{
+b2 = 135;
+if(!defined(G4)) G4=I4*0.45;
+if(!defined(G5)) G5=I5*0.45;
+if(!defined(G6)) G6=I6*0.45;
+ethickness1=0.0768;
+driftscreen4 = 0.092;
+drift3 = 0.104;
+drift4 = 0.086;
+drift5 = 0.085;
+focuspos1 = skewpos3 + driftscreen4 + drift3;
+focuspos2 = focuspos1 + drift4;
+focuspos3 = focuspos2 + drift5;
+
+quadrupole( "wcs","z", focuspos1, ethickness1, G4, b2);
+quadrupole( "wcs","z", focuspos2, ethickness1, G5, b2);
+quadrupole( "wcs","z", focuspos3, ethickness1, G6, b2);
+}
+
+
+################### SCREENS #########################################
+
+#screen("wcs","I",4.54);               # Yag after box
+#screen("wcs","I",3.191);             # screen4
+screen("wcs","I",3.191,4.54,0.01);
+#spacecharge3Dmesh();
+
+dtmaxt(0,15e-9,0.2e-10);

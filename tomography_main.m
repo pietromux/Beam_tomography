@@ -1,7 +1,7 @@
 clear all
 close all
 
-%initial beam paramters
+%initial beam parameters
 qe=-1.6e-19;
 beamdiv=1e-5; %beam divergence approximately
 Spotsize=10e-4; %for gaussian dist
@@ -46,6 +46,7 @@ fileloc='C:\Users\vgwr6\Desktop\UCLA\soph\Musumeci_Lab\GPT\Test_Images\'
 resfactor=1;
 saveImage=1;
 pixcal=13.614e-6; % 13.614e-6 old calibration? not really sure where it came from.
+
 if saveImage==1
      yag_Image_init = zeros(floor(800/resfactor),floor(800/resfactor));
      for l=1:length(x2ps)
@@ -61,17 +62,23 @@ if saveImage==1
      yag_Image_init=yag_Image_init.*floor(400/maxIm);
      radius=1; %pixels
      filter=fspecial('disk',radius);
-     yag_Image_init=conv2(yag_Image_init,filter);
+     yag_Image_init = conv2(yag_Image_init,filter);
      yag_Image_init = imresize(yag_Image_init,[800 800]);
-     yag_Image_init=uint8(yag_Image_init);
+     yag_Image_init = uint8(yag_Image_init);
      imageName = strcat('GPT_image_init2_1.1_-3.2_2.15','.bmp');
      imwrite(yag_Image_init,strcat(fileloc,imageName));
 end
+
+
+
 init_gpt_image=imread('C:\Users\vgwr6\Desktop\UCLA\soph\Musumeci_Lab\GPT\Test_Images\GPT_image_init_1.1_-3.2_2.15.bmp');
 numpart = sum(init_gpt_image, 'all');
 figure()
 imagesc(init_gpt_image)
 colorbar
+
+
+
 
 %% Final Yag Screen
 u=zeros(2,length(data(end).d.x));
@@ -109,6 +116,9 @@ final_gpt_image = 1/sum(final_gpt_image, 'all')*double(final_gpt_image);
 figure()
 imagesc(final_gpt_image)
 colorbar
+
+
+
 
 %% first iteration
 [init4DCoordOld, fin4DCoord, finIm, finImDisp, diffMat, posCoord, negCoord, sigmaRecon, stReconMeasXY] = first_propagation(init_gpt_image, final_gpt_image, R, numpart, 3e-20, pixcal, resfactor);
