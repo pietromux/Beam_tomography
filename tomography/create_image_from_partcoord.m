@@ -6,25 +6,26 @@ function imphsp = create_image_from_partcoord(phsp, imsize, pixelcal, psf, savef
 
 % saveflag is an option to save output image to savefilename
 
-n = imsize(1);
+% n = imsize(1);
 
-xgrid = ((1:imsize(1))-imsize(1)/2)*pixelcal;
-ygrid = ((1:imsize(2))-imsize(2)/2)*pixelcal;
+ygrid = ((1:imsize(1))-imsize(1)/2)*pixelcal;
+xgrid = ((1:imsize(2))-imsize(2)/2)*pixelcal;
 xf = phsp(:,1)';
 yf = phsp(:,3)';
 
-xr = interp1(xgrid,1:imsize(1),xf,'nearest')';
-yr = interp1(ygrid,1:imsize(2),-yf,'nearest')';
+xr = interp1(xgrid,1:imsize(2),xf,'nearest')';
+yr = interp1(ygrid,1:imsize(1),-yf,'nearest')';
 iout = isnan(xr) | isnan(yr);
 xr(iout)=[];
 yr(iout)=[];
 
-Z = accumarray([yr xr],1,[n n]);
+Z = accumarray([yr xr],1,imsize);
 imphsp = imgaussfilt(Z,psf/pixelcal);
 
 % need to be careful before saving and check that the saved image has the correct scale
 imphsp_aux = imphsp/max(max(imphsp))*255;
 imphsp = uint8(imphsp_aux-1);
+imphsp = imgaussfilt(imphsp, 0.5);
 
 if saveflag
      imwrite(imphsp,savefilename);
